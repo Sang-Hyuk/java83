@@ -1,0 +1,9 @@
+@CHARSET "UTF-8";
+
+.body {
+	font-size: small;
+}
+
+#footer>address {
+	text-align: center
+}

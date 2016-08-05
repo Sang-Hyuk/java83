@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>게시판 목록</title>
+<style type="text/css">
+  .view-form{
+  }
+  
+  .hidden{
+    display: none;
+  }
+</style>
+</head>
+<body>
+<div id="listPage">
+  <h1>게시물 목록</h1>
+  <p><a href="add.do">새 글</a></p>
+  <table id="boardTbl" border="1">
+    <thead>
+      <tr>
+        <th>번호</th>
+        <th>제목</th>
+        <th>생성일</th>
+        <th>조회수</th>
+      </tr>
+    </thead>
+    <tbody>
+    
+
+     
+    </tbody>
+  </table>
+  </div>
+  
+  <div id="formPage">
+  <h2>게시물 - 상세정보</h2>
+  <form>
+  <table border="1">
+    <tr class="view-form hidden">
+      <th>번호</th><td><span id="fno"></span></td>
+    </tr>
+    <tr>
+      <th>제목</th><td><input id="fTitle" type="text"/></td>
+    </tr>
+    <tr>
+      <th>내용</th><td><textarea id="fContent" rows="5" cols="60"></textarea> </td>
+    </tr>
+    <tr class="view-form hidden">
+      <th>등록일</th><td><span id="fCreateDate"></span></td>
+    </tr>
+    <tr class="view-form hidden">
+      <th>조회수</th><td><span id="fViewCount"></span></td>
+    </tr>
+  </table>
+  <p>
+    <button id="addBtn" type="button" class="new-form">등록</button>
+    <button id="updBtn" type="button" class="view-form hidden">변경</button>
+    <button id="delBtn" type="button" class="view-form hidden">삭제</button>
+    <button id="resetBtn" type="reset">취소</button>
+  </p>
+   </form>
+   </div>
+
+  <script id="tr-templete" type="text/x-handlebars-template">
+    {{#each data}}
+    <tr>
+      <td>{{no}}</td>
+      <td><a href='#' data-no='{{no}}' class='titleLink'>{{title}}</a></td>
+      <td>{{createDate}}</td>
+      <td>{{viewCount}}</td>
+    </tr>
+    {{/each}}
+  </script>
+  
+<script src="../node_modules/jquery/dist/jquery.min.js"></script>
+<script src="../node_modules/handlebars/dist/handlebars.min.js"></script>
+
+<script type="text/javascript">
+var source = $('#tr-templete').text();
+var templete = Handlebars.compile(source);
+
+function loadBoards(){
+$('#boardTbl > tbody > tr').remove();
+$.ajax({
+  url: 'list.json',
+  dataType: 'json',
+  method: 'get',
+  success: function(result) {
+    if (result.status != 'success'){
+      alert('실행 중 오류 발생');
+      return;
+    }
+   $('#boardTbl > tbody').append(templete(result));
+    
+  },
+  error: function() {
+    alert("error....");
+  }
+});
+}
+
+loadBoards();
+
+$('#addBtn').click(function() {
+	console.log($('#fTitle').val());
+	console.log($('#fContent').val());
+	$.ajax({
+		url: 'add.json',
+		method: 'post',
+		data: {
+			title:$('#fTitle').val(), 
+	    content:$('#fContent').val()
+		},
+		dataType: 'json',
+		success: function(result) {
+			if(result.status != 'success'){
+				alert('등록오류입니다');
+				return;
+			}
+			$('#resetBtn').click();
+			alert('등록성공입니다');
+			loadBoards();
+		},
+		error: function() {
+			alert('서버요청오류!');
+		}
+		
+	});
+});
+//$('.titleLink').click() ==> 동기 / 비동기 이해 필요
+//$(document).on('click', '.titleLink', function(event){
+
+$('#boardTbl').on('click', '.titleLink', function(event){
+	event.preventDefault();//a 태그를 클릭할때 서버에 요청하는 기본 행위를 취소한다.(refresh 를 막는다)
+	
+	
+	$.getJSON('detail.json?no=' + $(this).attr('data-no'), 
+		 function(result) {
+		   if (result.status != 'success') {
+			   alert('게시물 조회 오류!');
+			   return; 
+		   }
+		   
+		   $('.view-form').removeClass('hidden');
+		   $('.new-form').addClass('hidden');
+		   
+		   $('#fno').text(result.data.no);
+		   $('#fTitle').val(result.data.title);
+		   $('#fContent').val(result.data.content);
+		   $('#fCreateDate').text(result.data.createDate);
+		   $('#fViewCount').text(result.data.viewCount);
+		   
+	});
+	
+});
+
+$('#resetBtn').click(function() {
+	 $('#fno').text("");
+	 $('#fCreateDate').text("");
+   $('#fViewCount').text("");
+   
+	 $('.view-form').addClass('hidden');
+	 $('.new-form').removeClass('hidden');
+});
+
+$('#delBtn').click(function(event){ 
+	  $.getJSON('delete.json?no=' + $('#fno').text(), 
+	     function(result) {
+	       if (result.status != 'success') {
+	         alert('게시물 삭제 오류!');
+	         return; 
+	       }
+	       
+	       $('.view-form').addClass('hidden');
+	       $('.new-form').removeClass('hidden');
+	       
+	       $('#resetBtn').click();
+	       
+	       loadBoards();// 게시판 refresh 용
+	  });
+	});
+	
+$('#updBtn').click(function() {
+	  $.post(
+			  'update.json', {
+	    	no: $('#fno').text(), 
+	      title:$('#fTitle').val(), 
+	      content:$('#fContent').val()
+	    }, function(result) {
+	      if(result.status != 'success'){
+	        alert('변경오류입니다');
+	        return;
+	      }
+	      
+	      $('.view-form').addClass('hidden');
+	      $('.new-form').removeClass('hidden');
+	      $('#resetBtn').click();
+	      
+	      loadBoards();// 게시판 refresh 용
+	    }, 'json');
+	});
+</script>
+  
+</body>
+</html>

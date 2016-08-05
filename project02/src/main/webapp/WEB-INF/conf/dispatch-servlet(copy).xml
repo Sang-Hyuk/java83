@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <context:component-scan base-package="java83.example"/>
+<!--<context:annotation-config></context:annotation-config> 위태그가 아래 태그까지 암묵적으로 포함 
+    @Controll @AutoWired 등 을 수행 할 수 있는 빈 생성 정보 가지고 있음.-->
+       
+    <!-- 여러가지 어노테이션을 사용 할 수 있는 bean 설정들이 포함되어있음. -->
+    <mvc:annotation-driven></mvc:annotation-driven>
+    
+    <context:property-placeholder location="classpath:java83/example/dao/jdbc.properties"/>
+    
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+	    <property name="driverClassName" value="${jdbc.driverClassName}"/>
+	    <property name="url" value="${jdbc.url}"/>
+	    <property name="username" value="${jdbc.username}"/>
+	    <property name="password" value="${jdbc.password}"/>
+    </bean>
+    
+    <!-- Mybatis 설정 -->    
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		  <property name="dataSource" ref="dataSource" />
+		</bean>
+    
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+     <property name="dataSource" ref="dataSource" />
+     <property name="mapperLocations" value="classpath*:java83/example/dao/*Dao.xml" />
+     <!-- 자동으로 value 안의 패키지 클래스를 Alias 해준다 -->
+     <property name="typeAliasesPackage" value="java83.example.vo"/>
+    </bean>
+     
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+      <property name="basePackage" value="java83.example.dao" />
+    </bean>
+    
+    <!-- 기존에 이미 설치된  (ViewResolver : JSP 파일을 찾아 실행 시키는 객체 )를
+         WEB-INF 폴더에서  JSP 파일을 찾아주는 ViewResolver 로 교체하자! -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		  <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+		  <property name="prefix" value="/WEB-INF/jsp/"/>
+		  <property name="suffix" value=".jsp"/>
+		</bean>
+    
+    
+</beans>
+
+
+
+
+
+

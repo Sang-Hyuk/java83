@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>게시판 목록</title>
+</head>
+<body>
+  <h1>게시물 목록</h1>
+  <p><a href="add.do">새 글</a></p>
+  <table id="boardTbl" border="1">
+    <thead>
+      <tr>
+        <th>번호</th>
+        <th>제목</th>
+        <th>생성일</th>
+        <th>조회수</th>
+      </tr>
+    </thead>
+    <tbody>
+    
+      <!-- <tr>
+        <td>10</td>
+        <td><a href="detail.do?no=10">아니아니아니아니</a></td>
+        <td>2016-07-22</td>
+        <td>0</td>
+      </tr> -->
+     
+    </tbody>
+  </table>
+  
+  <script id="tr-templete" type="text/x-handlebars-template">
+    <tr>
+      <td>{{no}}</td>
+      <td><a href='#' data-no='{{no}}'>{{title}}</a></td>
+      <td>{{createDate}}</td>
+      <td>{{viewCount}}</td>
+    </tr>
+  </script>
+  
+<script src="../node_modules/jquery/dist/jquery.min.js"></script>
+<script src="../node_modules/handlebars/dist/handlebars.min.js"></script>
+
+<!--템플릿 적용 -->
+<script type="text/javascript">
+var source = $('#tr-templete').text();
+var templete = Handlebars.compile(source);
+
+$.ajax({
+  url: 'list.json',
+  dataType: 'json',
+  method: 'get',
+  success: function(result) {
+    if (result.status != 'success'){
+      alert('실행 중 오류 발생');
+      return;
+    }
+    var tbody = $('#boardTbl > tbody');
+    var list = result.data;
+    for (var i in list ) {
+      
+      tbody.append(templete(list[i]));
+            
+    }
+  },
+  error: function() {
+    alert("error....");
+  }
+});
+</script>
+  
+</body>
+</html>

@@ -1,0 +1,84 @@
+[Gradle 프로젝트 만들기]
+1. 프로젝트 폴더 생성
+c:\Users\BitCamp\workspace\project01
+
+2. 소스 폴더 생성
+/src/main
+  /java
+  /resources
+  /webapp
+    /WEB-INF
+    /test
+      /java
+  /resources
+
+3. Gradle 설정파일 생성
+/build.gradle
+
+4. Gradle 설정 파일에 다음 내용 입력
+=> 이클립스 웹 프로젝트를 만들기 위한 설정
+apply plugin:"java"
+apply plugin:"eclipse-wtp"
+apply plugin:"war"
+
+5. Gradle 실행
+=> build.gradle 폴더에 가서 다음 명령 실행
+gradle eclipse
+=> 참고: 이클립스 관련 설정 파일 모두 지우기
+gradle cleanEclipse
+
+6. 이클립스로 프로젝트를 import 한다.
+7. 톰캣 작업 서버에 프로젝트를 배치한다.
+=> 임시 작업 폴더를 확인하라!
+
+[스프링 MVC 도입]
+1. 의존 라이브러리를 추가
+=> build.gradle 파일 편집
+apply plugin:"java"
+apply plugin:"eclipse-wtp"
+apply plugin:"war"
+
+// 소스 파일의 인코딩 문자 집합을 지정한다.
+// => 만약 지정하지 않으면 OS의 기본 문자집합을 사용했다고
+//    가정하고 컴파일한다.
+// => Windows OS는 MS949가 기본 문자집합이다.
+//    소스 파일이 MS949로 되어 있다고 가정해 버린다.
+compileJava.options.encoding = 'UTF-8'
+
+// 소스 파일의 문법을 1.8 기준으로 검사한다.
+sourceCompatibility = 1.8
+
+// 컴파일할 때 1.8 기준으로 .class 파일을 만든다.
+// 즉 1.8 미만 버전에서는 실행되지 않을 수 있다.
+targetCompatibility = 1.8
+
+// 의존 라이브러리를 다운로드 받을 서버를 지정한다.
+repositories {
+    mavenCentral() // 메이븐 중앙 서버
+}
+
+// 의존 라이브러리 정보
+// => 라이브러리 검색 사이트: www.mvnrepository.com 
+dependencies {
+    compile 'org.springframework:spring-webmvc:4.3.1.RELEASE'
+}
+
+2. 이클립스 설정 파일 갱신 
+=> 의존 라이브러리를 다운로드 받고 classpath에 
+   추가하기 위해 이클립스 설정 파일을 갱신한다.
+gradle eclipse
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

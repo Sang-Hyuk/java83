@@ -1,0 +1,33 @@
+apply plugin : "java"
+apply plugin : "eclipse-wtp"
+apply plugin : "war"
+
+//==spring.io==
+
+//소스 파일의 인코딩 문자를 지정한다
+//    ==> 만약 지정하지 않으면 Windows OS의 기본 문자 집합을 사용했다고 가정하고 
+//        컴파일 한다.
+//    ==> Windows OS는 MS949 가 기본 문자집합이다.
+//        소스 파일이 MS949로 되어 있다고 가정해 버린다.
+compileJava.options.encoding = 'UTF-8'
+
+//소스 파일의 문법 검사를 할 때 1.8 기준으로 검사한다.
+sourceCompatibility = 1.8
+
+//컴파일 할 때 1.8 기준으로 .class 파일을 만든다.
+//즉, 1.8 아래 버전에서는 실행되지 않을 수 있다.
+targetCompatibility = 1.8
+
+//의존 라이브러리를 다운로드 받을 서버 지정
+repositories {
+    mavenCentral() //메이븐 중앙서버(Gradle 과 공유)
+}
+
+// 의존 라이브러리 정보
+// => 라이브러리 검색 사이트 : http://www.mvnrepository.com/
+dependencies {
+    
+    compile group: 'org.springframework', name: 'spring-webmvc', version: '4.3.1.RELEASE'
+    // libs 에 있는 디렉터리의 모든.jar 파일을 의존 라이브러리로 사용하겠다.
+    compile fileTree(dir:'libs', include: '*.jar')
+}

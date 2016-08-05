@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+<script id="entry-template" type="text/x-handlebars-template">
+  <div class="entry">
+    <h1>{{title}}</h1>
+    <div class="body">
+      {{body}}
+    </div>
+  </div>
+</script>
+
+<script src="../node_modules/jquery/dist/jquery.min.js"></script>
+<script src="../node_modules/handlebars/dist/handlebars.min.js"></script>
+<script>
+var source = $('#entry-template').text(); // 템플릿의 소스로 활용할 HTML 가져오기
+var templete = Handlebars.compile(source); // source 를 가지고 템플릿 만들기
+var html = templete({title:'okok', body:'haha'}); // 템플릿에 데이터를 적용하여 HTML 만들기
+console.log(html);
+</script>
+
+</body>
+</html>
+
+
+
