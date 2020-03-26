@@ -4,13 +4,15 @@ c:\Users\BitCamp\workspace\project01
 
 2. 소스 폴더 생성
 /src/main
-  /java
-  /resources
-  /webapp
-    /WEB-INF
-    /test
       /java
-  /resources
+      /resources
+      /webapp
+        /WEB-INF
+        /resources
+/src/test
+      /java
+      /resources
+  
 
 3. Gradle 설정파일 생성
 /build.gradle
